@@ -1,4 +1,4 @@
-package org.adeniuobesu.infrastructure;
+package org.adeniuobesu.securityheadersscanner.infrastructure;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Option;

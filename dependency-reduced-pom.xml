@@ -18,7 +18,7 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <mainClass>org.adeniuobesu.infrastructure.Main</mainClass>
+                  <mainClass>org.adeniuobesu.securityheadersscanner.infrastructure.Main</mainClass>
                 </transformer>
               </transformers>
             </configuration>
