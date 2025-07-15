@@ -46,8 +46,7 @@ cd security-headers-scanner
 ./scanner
 
 --url        URL à scanner
---output     Format du rapport (json|text)
---verbose    Affiche les détails de chaque en-tête
+--output     Format du rapport (json|text|html)
 ```
 
 ## 📦 Exemples de sorte
