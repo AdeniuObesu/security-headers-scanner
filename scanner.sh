@@ -55,4 +55,5 @@ fi
 
 # === Run the Scanner ===
 echo "🚀 Scanning $URL with output format: $FORMAT"
+clear
 java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT"
