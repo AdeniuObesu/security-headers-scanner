@@ -1,36 +1,42 @@
 package org.adeniuobesu.securityheadersscanner.adapters.out.report;
 
-import java.util.Map;
-
 import org.adeniuobesu.securityheadersscanner.application.ports.out.ReportGenerator;
+import org.adeniuobesu.securityheadersscanner.core.model.HeaderAnalysisResult;
+import org.adeniuobesu.securityheadersscanner.core.model.SecurityReport;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
 public class TextReportGenerator implements ReportGenerator {
 
     @Override
-    public void generate(String url, Map<String, String> headers) {
-        StringBuilder json = new StringBuilder("{\n  \"url\": \"" + url + "\",\n  \"headers\": {\n");
-
-        int size = headers.size();
-        int index = 0;
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
-            json.append("    \"")
-                .append(entry.getKey())
-                .append("\": \"")
-                .append(entry.getValue())
-                .append("\"");
-
-            if (++index < size) {
-                json.append(",");
-            }
-
-            json.append("\n");
+    public void generate(SecurityReport report, OutputStream outputStream) {
+        try (Writer writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8)) {
+            writer.write(formatReport(report));
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur lors de la génération du rapport texte", e);
         }
-
-        json.append("  }\n}");
-
-        System.out.println("\n🔍 Security Headers Report (JSON)");
-        System.out.println(json);
-        System.out.println();
     }
-    
+
+    private String formatReport(SecurityReport report) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n🔍 Security Headers Report (TEXT)\n");
+        sb.append("----------------------------------\n");
+        sb.append("🌐 URL       : ").append(report.url()).append("\n");
+        sb.append("🕒 Scan time : ").append(report.scanTime()).append("\n");
+        sb.append("🛡️ Grade     : ").append(report.overallGrade()).append("\n");
+        sb.append("----------------------------------\n\n");
+
+        for (HeaderAnalysisResult result : report.results()) {
+            sb.append("• ").append(result.headerName())
+              .append(" [").append(result.status()).append("]\n")
+              .append("  - ").append(result.message()).append("\n")
+              .append("  → Fix: ").append(result.recommendedFix()).append("\n\n");
+        }
+        return sb.toString();
+    }
 }
