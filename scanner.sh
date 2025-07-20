@@ -27,6 +27,7 @@ fi
 # === Parse Arguments ===
 URL=""
 FORMAT=""
+OUTPUT_DIR=""
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -38,9 +39,13 @@ while [[ $# -gt 0 ]]; do
       FORMAT="$2"
       shift 2
       ;;
+    --output)
+      OUTPUT_DIR="$2"
+      shift 2
+      ;;
     *)
       echo "❌ Unknown option: $1"
-      echo "Usage: ./scanner --url <url> --format <json|text|html>"
+      echo "Usage: ./scanner --url <url> --format <json|text|html> [--output <output-dir>]"
       exit 1
       ;;
   esac
@@ -49,11 +54,16 @@ done
 # === Validate the input arguments ===
 if [[ -z "$URL" || -z "$FORMAT" ]]; then
     echo "❌ Missing required arguments."
-    echo "Usage: ./scanner --url <url> --format <json|text|html>"
+    echo "Usage: ./scanner --url <url> --format <json|text|html> [--output <output-dir>]"
     exit 1
 fi
 
 # === Run the Scanner ===
 echo "🚀 Scanning $URL with output format: $FORMAT"
-clear
-java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT"
+
+if [[ -n "$OUTPUT_DIR" ]]; then
+    echo "📂 Saving output to directory: $OUTPUT_DIR"
+    java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT" --output "$OUTPUT_DIR"
+else
+    java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT"
+fi
