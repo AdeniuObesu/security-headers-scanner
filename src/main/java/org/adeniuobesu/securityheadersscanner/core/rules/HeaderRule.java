@@ -1,9 +1,8 @@
 package org.adeniuobesu.securityheadersscanner.core.rules;
 
-import java.util.Map;
-
 import org.adeniuobesu.securityheadersscanner.core.model.HeaderAnalysisResult;
+import org.adeniuobesu.securityheadersscanner.core.model.SecurityHeaders;
 
 public interface HeaderRule {
-    HeaderAnalysisResult evaluate(Map<String, String> headers);
+    HeaderAnalysisResult analyze(SecurityHeaders headers);
 }

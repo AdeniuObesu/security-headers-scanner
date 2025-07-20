@@ -1,17 +1,22 @@
 package org.adeniuobesu.securityheadersscanner.core;
 
 import java.util.List;
-import java.util.Map;
 
 import org.adeniuobesu.securityheadersscanner.core.model.HeaderAnalysisResult;
+import org.adeniuobesu.securityheadersscanner.core.model.SecurityHeaders;
 import org.adeniuobesu.securityheadersscanner.core.rules.HeaderRule;
+import org.adeniuobesu.securityheadersscanner.core.rules.HeaderRuleProvider;
 
 public class HeaderRuleEngine {
     private final List<HeaderRule> rules;
-    
-    public List<HeaderAnalysisResult> analyze(Map<String, String> headers) {
+
+    public HeaderRuleEngine() {
+        this.rules = new HeaderRuleProvider().getRules();
+    }
+
+    public List<HeaderAnalysisResult> analyze(SecurityHeaders headers) {
         return rules.stream()
-            .map(rule -> rule.evaluate(headers))
+            .map(rule -> rule.analyze(headers))
             .toList();
     }
 }

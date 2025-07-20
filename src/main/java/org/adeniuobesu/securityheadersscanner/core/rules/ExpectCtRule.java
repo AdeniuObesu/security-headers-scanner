@@ -1,21 +1,20 @@
 package org.adeniuobesu.securityheadersscanner.core.rules;
 
+import java.util.Optional;
+
 import org.adeniuobesu.securityheadersscanner.core.model.HeaderAnalysisResult;
 import org.adeniuobesu.securityheadersscanner.core.model.SecurityHeaders;
 import org.adeniuobesu.securityheadersscanner.core.model.SecurityStatus;
 
-import java.util.Optional;
-
-public class CspRule implements HeaderRule {
+public class ExpectCtRule implements HeaderRule {
     @Override
     public HeaderAnalysisResult analyze(SecurityHeaders headers) {
-        String name = "Content-Security-Policy";
+        String name = "Expect-CT";
         Optional<String> value = headers.get(name);
-
-        if (value.isEmpty() || value.get().isBlank()) {
-            return new HeaderAnalysisResult(name, SecurityStatus.FAIL, "Absent", "Ajoutez une politique CSP restrictive.");
+        if (value.isPresent() && value.get().contains("enforce")) {
+            return new HeaderAnalysisResult(name, SecurityStatus.PASS, "Présent", "");
         }
-
-        return new HeaderAnalysisResult(name, SecurityStatus.PASS, "Présent", "");
+        return new HeaderAnalysisResult(name, SecurityStatus.WARN, "Absent ou non enforce",
+            "Ajoutez : Expect-CT: enforce, max-age=86400");
     }
 }
