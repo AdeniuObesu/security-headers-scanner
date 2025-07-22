@@ -1,6 +1,5 @@
 package org.adeniuobesu.securityheadersscanner.adapters.out.report;
 
-import org.adeniuobesu.securityheadersscanner.application.ports.out.ReportGenerator;
 import org.adeniuobesu.securityheadersscanner.core.model.HeaderAnalysisResult;
 import org.adeniuobesu.securityheadersscanner.core.model.SecurityReport;
 
@@ -11,7 +10,7 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class JsonReportGenerator implements ReportGenerator {
+public class JsonReportGenerator implements FormatSpecificGenerator {
 
     @Override
     public void generate(SecurityReport report, OutputStream outputStream) {
@@ -64,5 +63,10 @@ public class JsonReportGenerator implements ReportGenerator {
             }
         }
         return sb.toString();
+    }
+
+    @Override
+    public String format() {
+        return "JSON";
     }
 }

@@ -1,6 +1,5 @@
 package org.adeniuobesu.securityheadersscanner.adapters.out.report;
 
-import org.adeniuobesu.securityheadersscanner.application.ports.out.ReportGenerator;
 import org.adeniuobesu.securityheadersscanner.core.model.HeaderAnalysisResult;
 import org.adeniuobesu.securityheadersscanner.core.model.SecurityReport;
 
@@ -10,7 +9,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-public class HtmlReportGenerator implements ReportGenerator {
+public class HtmlReportGenerator implements FormatSpecificGenerator {
 
     @Override
     public void generate(SecurityReport report, OutputStream outputStream) {
@@ -63,5 +62,10 @@ public class HtmlReportGenerator implements ReportGenerator {
                     .replace(">", "&gt;")
                     .replace("\"", "&quot;")
                     .replace("'", "&#39;");
+    }
+
+    @Override
+    public String format() {
+        return "HTML";
     }
 }
