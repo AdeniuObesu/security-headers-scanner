@@ -44,18 +44,4 @@ public class SecurityHeaderAnalysisService implements SecurityHeaderAnalysisUseC
         if (failed <= 4) return "C";
         return "D";
     }
-
-    /*
-     * 
-     * 
-    private String calculateGrade(List<HeaderAnalysisResult> results) {
-        // TODO: implement real grading logic (e.g., based on severity counts)
-        long missing = results.stream().filter(r -> !r.isPresent()).count();
-
-        if (missing == 0) return "A+";
-        if (missing <= 2) return "B";
-        if (missing <= 4) return "C";
-        return "D";
-    }
-     */
 }

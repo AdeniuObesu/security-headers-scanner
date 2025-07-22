@@ -5,12 +5,10 @@ import org.adeniuobesu.securityheadersscanner.application.ports.in.SecurityHeade
 import org.adeniuobesu.securityheadersscanner.application.ports.out.ReportGenerator;
 import org.adeniuobesu.securityheadersscanner.core.model.SecurityReport;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class ScanSecurityHeadersService implements ScanSecurityHeadersUseCase {
-
     private final SecurityHeaderAnalysisUseCase analysisService;
     private final ReportGenerator reportGenerator;
 
@@ -21,30 +19,13 @@ public class ScanSecurityHeadersService implements ScanSecurityHeadersUseCase {
     }
 
     @Override
-    public void scan(String url, String format, String outputDir) {
-        SecurityReport report = analysisService.analyze(url);
+    public SecurityReport scan(String url) {
+        return analysisService.analyze(url);
+    }
 
-        if (outputDir != null && !outputDir.isBlank()) {
-            try {
-                File dir = new File(outputDir);
-                if (!dir.exists()) {
-                    dir.mkdirs();
-                }
-                // Exemple : nom de fichier basé sur URL + format
-                String safeUrl = url.replaceAll("https?://", "").replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
-                String fileName = safeUrl + "-security-report." + format.toLowerCase();
-                File outFile = new File(dir, fileName);
-
-                try (FileOutputStream fos = new FileOutputStream(outFile)) {
-                    reportGenerator.generate(report, fos);
-                }
-                System.out.println("Rapport sauvegardé dans : " + outFile.getAbsolutePath());
-            } catch (IOException e) {
-                System.err.println("Erreur lors de la sauvegarde du rapport : " + e.getMessage());
-            }
-        } else {
-            // Sortie console par défaut
-            reportGenerator.generate(report, System.out);
-        }
+    public String generateReport(SecurityReport report, String format) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        reportGenerator.generate(report, format, baos);
+        return baos.toString(StandardCharsets.UTF_8);
     }
 }
