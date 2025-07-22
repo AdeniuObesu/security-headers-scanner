@@ -28,42 +28,65 @@ fi
 URL=""
 FORMAT=""
 OUTPUT_DIR=""
+WEB_MODE=0
+PORT="8081"
 
+usage() {
+  echo "Usage:"
+  echo "  Serveur Web : ./scanner.sh --web [--port <port>]"
+  echo "  Mode CLI    : ./scanner.sh -u <url> -f <json|text|html> [-o <output-dir>]"
+  exit 1
+}
+
+# Argument parsing
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --url)
+    --web)
+      WEB_MODE=1
+      shift
+      ;;
+    --port)
+      PORT="$2"
+      shift 2
+      ;;
+    -u|--url)
       URL="$2"
       shift 2
       ;;
-    --format)
+    -f|--format)
       FORMAT="$2"
       shift 2
       ;;
-    --output)
+    -o|--output)
       OUTPUT_DIR="$2"
       shift 2
       ;;
     *)
       echo "❌ Unknown option: $1"
-      echo "Usage: ./scanner --url <url> --format <json|text|html> [--output <output-dir>]"
-      exit 1
+      usage
       ;;
   esac
 done
 
-# === Validate the input arguments ===
-if [[ -z "$URL" || -z "$FORMAT" ]]; then
-    echo "❌ Missing required arguments."
-    echo "Usage: ./scanner --url <url> --format <json|text|html> [--output <output-dir>]"
-    exit 1
+# === Web mode ===
+if [[ $WEB_MODE -eq 1 ]]; then
+  echo "🚀 Lancement en mode serveur Web sur le port $PORT..."
+  echo "🚀 Lancement du serveur Web (http://localhost:$PORT/)..."
+  java -jar "$JAR_FILE" --web --port "$PORT"
+  exit 0
 fi
 
-# === Run the Scanner ===
+# === CLI mode ===
+if [[ -z "$URL" || -z "$FORMAT" ]]; then
+  echo "❌ Missing required arguments for CLI mode."
+  usage
+fi
+
 echo "🚀 Scanning $URL with output format: $FORMAT"
 
 if [[ -n "$OUTPUT_DIR" ]]; then
-    echo "📂 Saving output to directory: $OUTPUT_DIR"
-    java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT" --output "$OUTPUT_DIR"
+  echo "📂 Saving output to directory: $OUTPUT_DIR"
+  java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT" --output "$OUTPUT_DIR"
 else
-    java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT"
+  java -jar "$JAR_FILE" --url "$URL" --format "$FORMAT"
 fi

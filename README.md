@@ -46,7 +46,8 @@ cd security-headers-scanner
 ./scanner
 
 --url        URL à scanner
---output     Format du rapport (json|text|html)
+--output     Chemin du répertoire de sortie
+--format     Format du rapport (json|text|html)
 ```
 
 ## 📦 Exemples de sorte
