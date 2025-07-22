@@ -1,7 +1,7 @@
 package org.adeniuobesu.securityheadersscanner.application.ports.out;
 
-import java.util.Map;
+import org.adeniuobesu.securityheadersscanner.core.model.SecurityHeaders;
 
 public interface HttpClient {
-    Map<String, String> fetchHeaders(String url);
+    SecurityHeaders fetchHeaders(String url);
 }

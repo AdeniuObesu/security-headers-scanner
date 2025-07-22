@@ -2,34 +2,60 @@ package org.adeniuobesu.securityheadersscanner.application.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 import org.adeniuobesu.securityheadersscanner.application.ports.in.SecurityHeaderAnalysisUseCase;
 import org.adeniuobesu.securityheadersscanner.application.ports.out.HttpClient;
-import org.adeniuobesu.securityheadersscanner.application.ports.out.ReportGenerator;
 import org.adeniuobesu.securityheadersscanner.core.HeaderRuleEngine;
 import org.adeniuobesu.securityheadersscanner.core.model.HeaderAnalysisResult;
+import org.adeniuobesu.securityheadersscanner.core.model.SecurityHeaders;
 import org.adeniuobesu.securityheadersscanner.core.model.SecurityReport;
+import org.adeniuobesu.securityheadersscanner.core.model.SecurityStatus;
 
 public class SecurityHeaderAnalysisService implements SecurityHeaderAnalysisUseCase {
+
     private final HttpClient httpClient;
-    private final ReportGenerator reportGenerator;
-    private final HeaderRuleEngine ruleEngine; // New domain component
+    private final HeaderRuleEngine ruleEngine;
+
+    public SecurityHeaderAnalysisService(HttpClient httpClient, HeaderRuleEngine ruleEngine) {
+        this.httpClient = httpClient;
+        this.ruleEngine = ruleEngine;
+    }
 
     @Override
     public SecurityReport analyze(String url) {
-        // 1. Fetch (infrastructure)
-        Map<String, String> headers = httpClient.fetchHeaders(url);
-        
-        // 2. Analyze (domain)
+        // 1. Fetch response headers
+        SecurityHeaders headers = httpClient.fetchHeaders(url);
+
+        // 2. Analyze headers with domain rules
         List<HeaderAnalysisResult> results = ruleEngine.analyze(headers);
         String grade = calculateGrade(results);
-        
-        // 3. Report (infrastructure)
+
+        // 3. Return domain model object
         return new SecurityReport(url, results, grade, LocalDateTime.now());
     }
-    
+
     private String calculateGrade(List<HeaderAnalysisResult> results) {
-        // Domain logic for scoring
+        long failed = results.stream()
+                            .filter(r -> r.status() == SecurityStatus.FAIL)
+                            .count();
+
+        if (failed == 0) return "A+";
+        if (failed <= 2) return "B";
+        if (failed <= 4) return "C";
+        return "D";
     }
+
+    /*
+     * 
+     * 
+    private String calculateGrade(List<HeaderAnalysisResult> results) {
+        // TODO: implement real grading logic (e.g., based on severity counts)
+        long missing = results.stream().filter(r -> !r.isPresent()).count();
+
+        if (missing == 0) return "A+";
+        if (missing <= 2) return "B";
+        if (missing <= 4) return "C";
+        return "D";
+    }
+     */
 }

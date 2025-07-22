@@ -1,7 +1,9 @@
 package org.adeniuobesu.securityheadersscanner.application.ports.out;
 
-import java.util.Map;
+import java.io.OutputStream;
+
+import org.adeniuobesu.securityheadersscanner.core.model.SecurityReport;
 
 public interface ReportGenerator {
-    void generate(String url, Map<String, String> headers);
+    void generate(SecurityReport report, OutputStream fos);
 }
