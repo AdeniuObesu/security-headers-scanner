@@ -17,10 +17,10 @@ Fournir un scanner léger et extensible permettant d’évaluer la conformité d
   - `Referrer-Policy`
   - `Permissions-Policy`
 - Rapport clair des en-têtes manquants, faibles ou mal configurés
-- Export en JSON, texte ou HTML
-- Interface CLI intuitive
-- Serveur Web RESTful pour lancer des scans via HTTP
-- Architecture propre, testable, modulaire
+- Export en **JSON**, **texte** ou **HTML**
+- Interface **CLI intuitive**
+- Serveur **Web RESTful** avec une **interface Web interactive**
+- Architecture propre, testable, modulaire (Clean Architecture)
 
 ## 📐 Architecture
 
@@ -28,10 +28,10 @@ Le projet suit les principes de la **Clean Architecture** :
 
 ```bash
 src/
-├── core/          # Logique métier (use cases, entités)
-├── application/   # Services d'application (interfaces, orchestrations)
-├── infrastructure/# Accès réseau, implémentations HTTP
-└── adapters/      # Interfaces CLI et Web (Javalin)
+├── core/           # Logique métier (use cases, entités)
+├── application/    # Services d'application (interfaces, orchestrations)
+├── infrastructure/ # Accès réseau, implémentations HTTP
+└── adapters/       # Interfaces CLI et Web (Javalin)
 ```
 
 ✅ Tests unitaires & intégration
@@ -44,27 +44,35 @@ src/
 ```bash
 ./scanner --url <url> --format <json|text|html> [--output <répertoire>]
 ```
-
 * --url : URL du site à scanner
 * --format : Format de sortie du rapport (JSON, TEXT ou HTML)
 * --output (optionnel) : Répertoire dans lequel sauvegarder le rapport
+
 ### En mode Serveur Web
 ```bash
 ./scanner --web [--port <port>]
 ```
-
-* Lance un serveur web RESTful écoutant par défaut sur le port 8081
-* Option --port permet de changer le port d’écoute (ex: 9090)
-* API disponible sur http://localhost:<port>/scan?url=<url>&format=<format>
-
+* Lance un serveur RESTful + une interface web
+* --port (optionnel) : Port d'écoute (par défaut 8081)
+* Accès à l'interface Web : http://localhost:8081
+* API de scan disponible via :
 ```bash
 curl "http://localhost:8081/scan?url=https://example.com&format=json"
 ```
 
+## 🖥️ Interface Web
+Une interface HTML développée avec soin, qui permet de :
+- Renseigner l’URL à scanner
+- Choisir dynamiquement le format du rapport
+- Lancer le scan via le navigateur
+- Voir les résultats instantanément
+
 ## 💡 À venir
-- Interface Web minimale pour visualiser les résultats en temps réel
+- Interface Web avec historique des scans
 - Intégration CI/CD via GitHub Actions
-- Suggestions automatiques de corrections des headers
 - Support HTTP/2 et HTTP/3
+
+## 🔓 Licence
+✍️ Développé avec ❤️ par Moukhafi Anass pour la communauté open-source · 2025
 
 "N’hésitez pas à contribuer ou à faire remonter vos idées et bugs via les issues !"

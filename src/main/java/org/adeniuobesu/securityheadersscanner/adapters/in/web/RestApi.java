@@ -14,13 +14,42 @@ public class RestApi {
 
     public RestApi(ScanSecurityHeadersUseCase scanService) {
         this.scanService = scanService;
-        this.app = Javalin.create();
+        this.app = Javalin.create(config -> {
+            config.staticFiles.add("/public"); // Charge les fichiers HTML, JS, CSS depuis resources/public
+        });
         registerRoutes();
     }
 
     private void registerRoutes() {
         app.get("/scan", this::handleScan);
-        app.get("/", ctx -> ctx.result("Security Headers Scanner API"));
+        app.post("/scan", this::handleScanPost);
+        app.get("/", ctx -> ctx.redirect("/index.html"));
+    }
+
+    private void handleScanPost(Context ctx) {
+        try {
+            ScanRequest request = ctx.bodyAsClass(ScanRequest.class);
+
+            if (request.url == null || request.url.isBlank()) {
+                ctx.status(400).result("❗ Paramètre 'url' est requis");
+                return;
+            }
+
+            String format = request.format != null ? request.format.toUpperCase() : "JSON";
+            SecurityReport report = scanService.scan(request.url);
+            String output = scanService.generateReport(report, format);
+
+            Map<String, String> contentTypes = Map.of(
+                "HTML", "text/html",
+                "TEXT", "text/plain",
+                "JSON", "application/json"
+            );
+            ctx.contentType(contentTypes.getOrDefault(format, "application/json"));
+            ctx.result(output);
+
+        } catch (Exception e) {
+            ctx.status(500).result("Erreur lors du scan POST : " + e.getMessage());
+        }
     }
 
     private void handleScan(Context ctx) {
